@@ -1,0 +1,16 @@
+{
+  "name": "node-to-image",
+  "version": "1.0.0",
+  "description": "HtmlToImage",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js filePath=C:\\Users\\Lenovo\\Desktop\\aa\\arbitrage-theme\\index.html savePath=C:\\Users\\Lenovo\\Desktop\\aa\\arbitrage-theme/image.png width=500 height=750",
+    "build": "pkg -t node16-win index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aleksandar Konatar",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^20.7.3"
+  }
+}
