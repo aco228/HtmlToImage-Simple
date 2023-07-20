@@ -6,6 +6,8 @@ let filepath = '';
 let savePath = '';
 let width = 0;
 let height = 0;
+let imageType = 'png';
+let omitBackground = false;
 
 const arguments = process.argv.slice(2);
 for(const arg of arguments) {
@@ -13,17 +15,26 @@ for(const arg of arguments) {
   if (argSplit.length !== 2)
     continue;
 
-  if(argSplit[0] === 'filePath')
-    filepath = argSplit[1];
+  const parameter = argSplit[0].trim();
+  const value = argSplit[1].trim();
 
-  if(argSplit[0] === 'savePath')
-    savePath = argSplit[1];
+  if(parameter === 'filePath')
+    filepath = value;
 
-  if(argSplit[0] === 'width')
-    width = parseInt(argSplit[1]);
+  if(parameter === 'savePath')
+    savePath = value;
 
-  if(argSplit[0] === 'height')
-    height = parseInt(argSplit[1]);
+  if(parameter === 'width')
+    width = parseInt(value);
+
+  if(parameter === 'height')
+    height = parseInt(value);
+
+  if(parameter === 'imageType')
+    imageType = parseInt(value);
+
+  if(parameter === 'omitBackground')
+    omitBackground = value === 'true' ? true : false;
 
   console.log('arg ' + arg)
 }
@@ -46,13 +57,49 @@ fs.readFile(filepath, 'utf8', async (err, data) => {
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+
+  page.on('console', async (msg) => {
+    const msgArgs = msg.args();
+    const logValues = await Promise.all(msgArgs.map(async arg => await arg.jsonValue()));
+    console.log('FROM PAGE:: ', ...logValues);
+  });
   await page.setViewport({
     width: width,
     height: height,
     deviceScaleFactor: 1,
   });
+
   await page.setContent(data);
-  await page.screenshot({path: savePath});
+  await page.evaluate(() => document.body.style.background = 'transparent');
+  await page.evaluate('fromPuppeteer()');
+
+  let index = 0;
+  for(;;) {
+    if (index !== 0)
+      await timeout(15);
+
+    index++;
+    console.log('index', index);
+    if (index > 2000)
+      break;
+
+    const isReady = await page.evaluate('isReady()');
+    if (isReady !== 'ready')
+      continue;
+
+    console.log('isReady', isReady);
+    await timeout(200);
+
+    await page.screenshot({
+      path: savePath,
+      type: imageType,
+      encoding: 'binary',
+      captureBeyondViewport: false,
+      omitBackground: omitBackground,
+    });
+    break;
+  }
+
   await browser.close();
 });
 
@@ -62,3 +109,8 @@ function exitWith(text){
   process.exit(1);
   return false;
 }
+
+const timeout = (ms) =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })

@@ -4,7 +4,7 @@
   "description": "HtmlToImage",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js filePath=C:\\Users\\Lenovo\\Desktop\\aa\\arbitrage-theme\\index.html savePath=C:\\Users\\Lenovo\\Desktop\\aa\\arbitrage-theme/image.png width=500 height=750",
+    "start": "node index.js omitBackground=true filePath=C:\\Users\\Lenovo\\Documents\\ArbitrageSoulsStorage\\_temp\\html_generated_6f2e4f5e43ad4ae8b68326632d9d9701.html savePath=C:\\Users\\Lenovo\\Documents\\ArbitrageSoulsStorage\\_temp\\generated.png width=1024 height=1024 type=png",
     "build": "pkg -t node16-win index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
